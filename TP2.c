@@ -56,24 +56,19 @@ liste* creer_produit()
     }
 
     printf("Saisir le nom du produit : ");
-    fgets(prodcName,sizeof(prodcName),stdin);
-    prodcName[strcspn(prodcName, "\n")] = 0;
+     scanf("%99s",prodcName);
     printf("Saisir la reference : ");
-    fgets(refer,sizeof(refer),stdin);
-    refer[strcspn(refer, "\n")] = 0;
+     scanf("%99s",refer);
     printf("Saisir le prix : ");
-    scanf("%f",&pRICE);
-    getchar();//getchar(); does not work >>> I'm sure in this line there is something wrong
+     scanf("%f",&pRICE);
     printf("Saisir la date :\n");
     printf("\tJour : ");
-    fgets(buyDate.jour,sizeof(buyDate.jour),stdin);
-    buyDate.jour[strcspn(buyDate.jour, "\n")] = 0;
+     scanf("%2s",buyDate.jour);
     printf("\tMois : ");
-    fgets(buyDate.mois,sizeof(buyDate.mois),stdin);
-    buyDate.mois[strcspn(buyDate.mois, "\n")] = 0;
+     scanf("%2s",buyDate.mois);
     printf("\tAnnee : ");
-    fgets(buyDate.annee,sizeof(buyDate.annee),stdin);
-    buyDate.annee[strcspn(buyDate.annee, "\n")] = 0;
+     scanf("%4s",buyDate.annee);
+    printf("\n");
 
     strcpy(node->cellule.Nom_Produit,prodcName);
     strcpy(node->cellule.reference,refer);
@@ -260,7 +255,7 @@ int main()
 
     afficher_produit(tete);
 
-    tete = ajouter_debut(tete);
+    tete = ajouter_debut(tete);// it fails to allocate
     //tete = ajouter_debut(tete);
     /*ajouter_fin(tete);
     ajouter_fin(tete);
