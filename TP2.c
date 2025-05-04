@@ -36,47 +36,33 @@ int est_vide(liste* tete)
     //or return (tete == NULL)
 }
 
-void viderBuffer()
-{
-    int c;
-    while( (c=getchar())!='\n' && c!=EOF);
-}
-
 liste* creer_produit()
 { 
     liste* node = (liste*)malloc(sizeof(liste));
-    char prodcName[100];// is equivalent to : char prodcName[];
-    char refer[100];
-    float pRICE;
-    date buyDate;
 
     if(!node)//or if(node == NULL)
     {
-        printf("Not enough memory!\n"); return NULL;
+        printf("Not enough memory!\a\n"); return NULL;
     }
 
+    node->cellule.Nom_Produit = (char*)malloc(100*sizeof(char));
+
     printf("Saisir le nom du produit : ");
-     scanf("%99s",prodcName);
+    scanf(" %s",node->cellule.Nom_Produit);
     printf("Saisir la reference : ");
-     scanf("%99s",refer);
+    scanf(" %s",node->cellule.reference);
     printf("Saisir le prix : ");
-     scanf("%f",&pRICE);
+    scanf("%f",&node->cellule.Montant);
+    //getchar();
     printf("Saisir la date :\n");
     printf("\tJour : ");
-     scanf("%2s",buyDate.jour);
+    scanf(" %s",node->cellule.DateAchat.jour);
     printf("\tMois : ");
-     scanf("%2s",buyDate.mois);
+    scanf(" %s",node->cellule.DateAchat.mois);
     printf("\tAnnee : ");
-     scanf("%4s",buyDate.annee);
-    printf("\n");
-
-    strcpy(node->cellule.Nom_Produit,prodcName);
-    strcpy(node->cellule.reference,refer);
-    node->cellule.Montant = pRICE;
-    strcpy(node->cellule.DateAchat.jour,buyDate.jour);
-    strcpy(node->cellule.DateAchat.mois,buyDate.mois);
-    strcpy(node->cellule.DateAchat.annee,buyDate.annee);
+    scanf(" %s",node->cellule.DateAchat.annee);
     node->psuiv = NULL;
+    free(node->cellule.Nom_Produit);
 
     return node;
 }
@@ -84,24 +70,27 @@ liste* creer_produit()
 void afficher_produit(liste* produit)
 {
     liste* parkour = produit;
+
     if(produit==NULL)
-    printf("Nothing to display.\n\a");
-    else
     {
-        printf("\tNom du produit : ");
-        puts(parkour->cellule.Nom_Produit);
-        printf("\tReference : ");
-        puts(parkour->cellule.reference);
-        printf("\tMontant : ");
-        printf("%f",parkour->cellule.Montant);
-        printf("\tDate d'achat : ");
-        printf(" Jour : ");
-        printf("%s  ",parkour->cellule.DateAchat.jour);
-        printf(" Mois : ");
-        printf("%s  ",parkour->cellule.DateAchat.mois);
-        printf(" Annee : ");
-        printf("%s\n",parkour->cellule.DateAchat.annee);
+        printf("Nothing to display!\n"); return;
     }
+
+    printf("\tNom du produit : ");
+    puts(parkour->cellule.Nom_Produit);
+    printf("\tReference : ");
+    puts(parkour->cellule.reference);
+    printf("\tMontant : ");
+    printf("%.2f",parkour->cellule.Montant);
+    printf("\n\tDate d'achat :\n");
+    printf(" Jour : ");
+    printf("%s  ",parkour->cellule.DateAchat.jour);
+    printf(" Mois : ");
+    printf("%s  ",parkour->cellule.DateAchat.mois);
+    printf(" Annee : ");
+    printf("%s\n",parkour->cellule.DateAchat.annee);
+
+    printf("\n");
 }
 
 liste* ajouter_debut(liste* tete)
@@ -125,8 +114,6 @@ void ajouter_fin(liste** tete)
     { parkour = parkour->psuiv; }
     parkour->psuiv = tmp;
 }
-
-//Remarque sur le temps d'execution : code full of errors
 
 void afficher_produits(liste* tete)
 {
@@ -197,8 +184,15 @@ liste* supprimer_debut(liste* tete)
 
 void supprimer_fin(liste** tete)
 {
-    if(tete == NULL)
-    { printf("The list is empty.\n"); }
+    if(*tete == NULL)
+    { printf("The list is empty.\n"); return; }
+
+    if( (*tete)->psuiv == NULL )
+    {
+        free(*tete);
+        *tete = NULL;
+        return;
+    }
 
     liste* tmp = *tete;
     while(tmp->psuiv->psuiv!=NULL)
@@ -209,7 +203,7 @@ void supprimer_fin(liste** tete)
     tmp->psuiv=NULL;
 }
 
-liste* rembourser(liste* tete,char* refer)
+liste* rembourser(liste* tete,const char* refer)
 {
     liste* parkour = tete;
     liste* ptr = tete;
@@ -245,21 +239,40 @@ liste* rembourser(liste* tete,char* refer)
 int main()
 {
     liste* tete = NULL;
-    int empty;
+    int isEmpty;
+    const char* refer = "Tester";
+
     printf("Initialisation d'une liste vide\n");
     tete = creer_liste_produits();
+    printf("\n");
 
-    empty = est_vide(tete);
-
-    tete = creer_produit(tete);
-
+    isEmpty = est_vide(tete);
+    printf("%d.\n",isEmpty);
     afficher_produit(tete);
+    printf("------------------------\n");
 
-    tete = ajouter_debut(tete);// it fails to allocate
-    //tete = ajouter_debut(tete);
-    /*ajouter_fin(tete);
-    ajouter_fin(tete);
+    tete = ajouter_debut(tete);
+    tete = ajouter_debut(tete);
+    tete = ajouter_debut(tete);
+    ajouter_fin(&tete);
+    ajouter_fin(&tete);
+    ajouter_fin(&tete);
+    afficher_produits(tete);
+    printf("------------------------\n");
 
-    afficher_produits(tete);*/
+    date theDT;
+    printf("Saisir la date pour filtrer:\n");
+    printf("\tJour : ");
+    scanf(" %s",theDT.jour);
+    printf("\tMois : ");
+    scanf(" %s",theDT.mois);
+    printf("\tAnnee : ");
+    scanf(" %s",theDT.annee);
+    filtrer_date(tete,theDT);
+
+    tete = supprimer_debut(tete);
+    supprimer_fin(&tete);
+    tete = rembourser(tete,refer);
+
     return 0;
 }
